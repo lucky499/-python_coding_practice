@@ -1,0 +1,82 @@
+---
+- name: This play is to test shell module
+  hosts: localhost
+  gather_facts: no
+  vars:
+    - file_names:
+        - one_test.txt
+        - two_test.txt
+        - three_test.txt
+  tasks:
+    - name: Printing variable names and values
+      debug:
+        msg: var is "{{ item }}"
+      loop:
+        - "{{ file_names[0] }}"
+        - "{{ file_names[1] }}"
+        - "{{ file_names[2] }}"
+    - name: Test simple echo with shell 
+      shell: ls *.yaml
+      ignore_errors: yes
+      register: echo_out
+    - name: Print the echo output
+      debug:
+        msg: "{{ echo_out.stdout }}"
+    - name: print files in readable format
+      debug:
+        msg: "{{ echo_out.stdout_lines }}"
+    - name: Print files list with loop
+      debug: 
+        msg: "{{ item }}"
+      loop: "{{ echo_out.stdout_lines }}"
+    - name: Print status of the command
+      set_fact:
+        command_status: Command success
+        out_put_is: "{{ echo_out.stdout }}"
+      when: echo_out.rc == 0
+    - name: printing variables
+      debug:
+        msg: "Command status is {{ command_status }}"
+      when: command_status is defined
+
+- name: This play is to test shell with args
+  hosts: localhost
+  gather_facts: no
+  vars:
+    - file_names:
+        - one_test.txt
+        - two_test.txt
+        - three_test.txt
+  tasks:
+    - name: check file existence
+      stat:
+        path: "/home/ubuntu/ansible_practice/{{ item.name }}"
+      register: log_st
+      loop:
+        - { 'name': "{{ file_names[0] }}" }
+        - { 'name': "{{ file_names[1] }}" }
+        - { 'name': "{{ file_names[2] }}" }
+    - name: Print file stats
+      debug:
+        msg: the logs stats are "{{ log_st }}"
+    - name: Create the ansible_practicer directory
+      file:
+        path: /home/ubuntu/ansible_practicer
+        state: directory
+        mode: '0777'
+    - name: create the test_txt.log file if not exists
+      file:
+        path: "/home/ubuntu/ansible_practicer/{{ item.name }}"
+        state: touch
+        mode: '0777'
+      loop:
+        - name: "{{ file_names[0] }}"
+        - name: "{{ file_names[1] }}"
+        - name: "{{ file_names[2] }}"
+      when: log_st.stat.exists is defined and log_st.stat.exists == False
+    - name: Write some text to new test file
+      shell: echo "hello new" >> "/home/ubuntu/ansible_practicer/{{ item.name }}"
+      loop:
+        - { 'name': "{{ file_names[0] }}" }
+        - { 'name': "{{ file_names[1] }}" }
+        - { 'name': "{{ file_names[2] }}" }

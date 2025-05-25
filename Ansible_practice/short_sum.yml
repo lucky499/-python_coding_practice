@@ -1,0 +1,14 @@
+---
+- name: this is to do short sum
+  hosts: localhost
+  gather_facts: no
+  tasks:
+  - name: set list variable
+    set_fact:
+      sumList:
+        - 10
+        - 30
+        - 50
+  - name: print sum
+    debug:
+      msg: "sum is {{ sumList|sum }}"

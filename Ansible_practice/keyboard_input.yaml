@@ -1,0 +1,19 @@
+---
+- name: This play is to test keyboard inputs
+  hosts: localhost
+  gather_facts: no
+
+  vars_prompt:
+    - name: "user_name_1"
+      prompt: "Please enter your name"
+      private: no
+    - name: "user_name_2"
+      prompt: "Please enter your name"
+      private: no
+
+  tasks:
+    - name: Print input from the user via keyboard
+      debug:
+        msg: 
+          - "hello {{ user_name_1 }}"
+          - "hello {{ user_name_2 }}"

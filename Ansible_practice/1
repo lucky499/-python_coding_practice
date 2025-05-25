@@ -1,0 +1,18 @@
+---
+- name: to do the sum
+  hosts: localhost
+  gather_facts: no
+  tasks:
+  - name: print sum
+    debug:
+      msg: "to print sum"
+  - name: doing operation
+    set_fact:
+      total_sum: {{ total_sum|default(0)+item|int }}
+    loop:
+      - 10
+      - 20
+  - name: printing the var
+    debug:
+      msg: "sum is {{ total_sum }}"
+

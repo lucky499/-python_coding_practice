@@ -1,0 +1,20 @@
+---
+- name: This play is to check ping
+  hosts: localhost
+  become: true
+  gather_facts: no
+  tasks:
+    - name: do a ping
+      ping:
+        data: gogllxm
+      register: ping_output
+
+    - name: pring ping output
+      debug:
+         msg: "ping check to {{ ping_output.ping }} is success and output is {{ ping_output }}"
+      when: not ping_output.failed | default(false)
+
+
+
+         
+

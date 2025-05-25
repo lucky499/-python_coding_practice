@@ -1,0 +1,31 @@
+---
+- name: This play is to test loops
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Task to print 1..10 numbers
+      debug: 
+        msg: "{{ item }}"
+      loop: "{{ range(1, 10, 2) | list }}"
+    - name: Task to sort numbers
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ [10, 45, 2, 0, 10] | sort }}"
+    - name: Task to sort letters
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ ['mac', 'hp', 'acer', 'dell'] | sort }}"
+    - name: Task to print event numbers
+      debug:
+        msg: "{{ item }}"
+      when: item%2 == 0
+      loop: "{{ range(1, 10) | list}}"
+    - name: Task to add two lists
+      debug:
+        msg: "{{ l1[item] }} + {{ l2[item] }} = {{ l1[item] + l2[item] }}"
+      vars:
+        l1: [1,2,3,4,5]
+        l2: [9,6,4,6,2]
+      loop: "{{ range(0, l1|length) | list}}"
+
+

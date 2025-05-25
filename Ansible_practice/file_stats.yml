@@ -1,0 +1,59 @@
+---
+- name: This play is to check the file existence
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Checking availability
+      stat:
+        path: /home/ubuntu/ansible_practice/testt_sum.yml
+      register: stat_results
+
+    - name: Printing the stat
+      debug:
+              msg: "The available stats is: {{ stat_results.stat}}"
+  
+    - name: Creating the file
+      command: "touch /home/ubuntu/ansible_practice/testt_sum.yml"
+      when: stat_results.stat.exists == False
+
+    - name: Setting file permissions
+      file:
+        path: /home/ubuntu/ansible_practice/testt_sum.yml
+        mode: 777
+
+
+- name: This play is to create a user and assign file permission to the new user
+  hosts: localhost
+  become: true
+  gather_facts: no
+  vars:
+    users:
+      - venky
+      - pinky
+      - tinku
+  tasks:
+    - name: Check user presence
+      command: id {{ item }}
+      register: user_check_results
+      ignore_errors: true
+      failed_when: false
+      loop: "{{ users }}"
+      loop_control:
+        loop_var: item
+
+    - name: Print user_check_results
+      debug:
+        msg: "The user {{ item }} details are: {{ user_check_results }}"
+      loop: "{{ users }}"
+      loop_control:
+        loop_var: item
+
+    - name: Create user
+      user:
+        name: "{{ item }}"
+        state: present
+      when: user_check_results.results[0].rc != 0
+      loop: "{{ users }}"
+
+
+

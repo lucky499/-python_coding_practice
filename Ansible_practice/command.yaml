@@ -1,0 +1,11 @@
+---
+- name: This play to test command module
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: test simple echo hello
+      command: ls -l *.yaml
+      register: echo_out
+    - name: print above command
+      debug:
+        msg: the output is "{{ echo_out.stdout }}"
